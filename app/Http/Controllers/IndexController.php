@@ -17,26 +17,18 @@ class IndexController extends Controller
 
     public function storeJsonData(Request $request){
         $this->validate($request,array(
-            'json_file' =>'required|mimes:json',
+            'json_file' =>'required'
         ));
-
-        if($request->hasFile('json_file')){
-            try{
-                $file = $request->file('json_file');
-                $fileName = time().$request->file('json_file')->getClientOriginalExtension();
-                $file-> move(public_path('/json'), $fileName);
-
-                $path = public_path()."/json/${fileName}";
-                $json = json_decode(file_get_contents($path), true); 
-                $this->storeDataInDatabase($json);
-            }catch(Exception $e){
-               Session::flash('message', 'Upload a json file');
-            return redirect()->back(); 
-            }
-        }
-        else {
+        try{
+            $file = $request->file('json_file');
+            $fileName = time().$request->file('json_file')->getClientOriginalExtension();
+            $file-> move(public_path('/json'), $fileName);
+            $path = public_path()."/json/${fileName}";
+            $json = json_decode(file_get_contents($path), true); 
+            $this->storeDataInDatabase($json);
+        }catch(Exception $e){
             Session::flash('message', 'Upload a json file');
-            return redirect()->back();
+        return redirect()->back(); 
         }
         Session::flash('message', 'Succesfully added the file');
         return redirect('/');
