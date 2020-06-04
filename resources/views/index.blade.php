@@ -7,7 +7,7 @@
         <form enctype="multipart/form-data" method="post" action="{{Route('store.json')}}">
         {{csrf_field()}}
         Upload JSON file <input type ='file' name='json_file'>
-        <buton class="btn btn-primary" type='submit'>Upload</button>
+        <input required = 'required' class="btn btn-primary" type='submit' value='Upload'>
         </form>
     </div>
     <div class='col-md-12'>
@@ -27,43 +27,9 @@
                 <input class="form-control" type = 'text' name = 'product_price' placeholder='34.99'>
             </div>
             <div class='form-group col-md-3'>
-                <buton class="btn btn-primary" type='submit'>Filter</button>
+                <input class="btn btn-primary" type='submit' value = 'Filter'>
             </div>
         </form>
     </div>
-    @if($query_result)
-        <div class='col-md-12'>
-        <h1 class='display-5'>Filter Result</h1>
-            <table class='table'>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Customer Name</th>
-                        <th>Customer Email</th>
-                        <th>Product Name</th>
-                        <th>Product ID</th>
-                        <th>price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $total = 0; ?>
-                    @foreach($query_result as $result)
-                        <tr>
-                            <td>{{$result->date}}</td>
-                            <td>{{$result->customer->name}}</td>
-                            <td>{{$result->customer->email}}</td>
-                            <td>{{$result->product->name}}</td>
-                            <td>{{$result->product->id}}</td>
-                            <td>{{$result->product->price}}</td>
-                        </tr>
-                        <?php $total = $total+floatval($result->product->price); ?>
-                    @endforeach
-                    <tr>
-                        <td colspan=5>Total</td>
-                        <td>{{$total}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    @endif
+   
 @endsection

@@ -21,9 +21,7 @@ class IndexController extends Controller
 
             $path = public_path()."/json/${fileName}";
             $json = json_decode(file_get_contents($path), true); 
-
             $this->storeDataInDatabase($json);
-        //return redirect();
     }
 
     public function storeDataInDatabase(array $json){
@@ -45,54 +43,53 @@ class IndexController extends Controller
                 $product->save();
             }
 
-            $sale = new sale();
+            for($i = 0; $i<5; $i++){
+                $sale = new sale();
             $sale->product_id = $input['product_id'];
             $sale->customer_id = $already_customer->id;
             $sale->date = $input['sale_date'];
             $sale->save();
 
+            }
         }
+        return view('index');
     }
 
     public function filter(Request $request){
-
-        if($request->has('customer_name')){
+        $query_result = collect();
+        if($request->customer_name){
             $customers = Customer::where(['name' => $request->customer_name])->get()->unique('email');
         }
-        if($request->has('product_name') && $request->has('product_price')){
+        if($request->product_name && $request->product_price){
             $products_n_p = Product::where(['name' => $request->product_name , 'price' => $request->product_price])->get()->unique('id');
         }
-        else if($request->has('product_price')){
-            $products_p = Customer::where(['price' => $request->product_price])->get()->unique('id');
+        else if($request->product_price){
+            $products_p = Product::where(['price' => $request->product_price])->get()->unique('id');
         }
         else{
-            $products_n = Customer::where(['name' => $request->product_name])->get()->unique('id');
+            $products_n = Product::where(['name' => $request->product_name])->get()->unique('id');
         }
         
-        if($request->has('customer_name') && $request->has('product_name') && $request->has('product_price')){
-            $query_result = collect();
+        if($request->customer_name && $request->product_name && $request->product_price){
             foreach($customers as $customer){
                 foreach($products_n_p as $product){
                     $result = Sale::where(['product_id' => $product->id , 'customer_id' => $customer->id])->with('product','customer')->get();
                     $query_result = $query_result->concat($result);
                 }
             }
+            return view('search',['query_result' => $query_result]);
 
-            return view('index',['query_result' => $query_result]);
         }
-        else if($request->has('customer_name') && $request->has('product_name')){
-            $query_result = collect();
+        else if($request->customer_name && $request->product_name){
             foreach($customers as $customer){
                 foreach($products_n as $product){
                     $result = Sale::where(['product_id' => $product->id , 'customer_id' => $customer->id])->with('product','customer')->get();
                     $query_result = $query_result->concat($result);
                 }
             }
-
-            return view('index',['query_result' => $query_result]);
+            return view('search',['query_result' => $query_result]);
         }
-        else if($request->has('customer_name') && $request->has('product_price')){
-            $query_result = collect();
+        else if($request->customer_name && $request->product_price){
             foreach($customers as $customer){
                 foreach($products_p as $product){
                     $result = Sale::where(['product_id' => $product->id , 'customer_id' => $customer->id])->with('product','customer')->get();
@@ -100,44 +97,40 @@ class IndexController extends Controller
                 }
             }
 
-            return view('index',['query_result' => $query_result]);
+            return view('search',['query_result' => $query_result]);
 
         }
-        else if($request->has('product_name') && $request->has('product_price')){
-            $query_result = collect();
+        else if($request->product_name && $request->product_price){
             foreach($products_n_p as $product){
                 $result = Sale::where(['product_id' => $product->id])->with('product','customer')->get();
                 $query_result = $query_result->concat($result);
             }
 
-            return view('index',['query_result' => $query_result]);
+            return view('search',['query_result' => $query_result]);
         }
-        else if($request->has('customer_name')){
-            $query_result = collect();
+        else if($request->customer_name){
             foreach($customers as $customer){
                 $result = Sale::where(['customer_id' => $customer->id])->with('product','customer')->get();
                 $query_result = $query_result->concat($result);
             }
 
-            return view('index',['query_result' => $query_result]);
+            return view('search',['query_result' => $query_result]);
         }
-        else if($request->has('product_name')){
-            $query_result = collect();
+        else if($request->product_name){
             foreach($products_n as $product){
                 $result = Sale::where(['product_id' => $product->id])->with('product','customer')->get();
                 $query_result = $query_result->concat($result);
             }
 
-            return view('index',['query_result' => $query_result]);
+            return view('search',['query_result' => $query_result]);
         }
-        else if($request->has('product_price')){
-            $query_result = collect();
+        else if($request->product_price){
             foreach($products_p as $product){
                 $result = Sale::where(['product_id' => $product->id])->with('product','customer')->get();
                 $query_result = $query_result->concat($result);
             }
 
-            return view('index',['query_result' => $query_result]);
+            return view('search',['query_result' => $query_result]);
         }
         else{
             return redirect();
