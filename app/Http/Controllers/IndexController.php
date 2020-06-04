@@ -81,22 +81,63 @@ class IndexController extends Controller
             return view('index',['query_result' => $query_result]);
         }
         else if($request->has('customer_name') && $request->has('product_name')){
+            $query_result = collect();
+            foreach($customers as $customer){
+                foreach($products_n as $product){
+                    $result = Sale::where(['product_id' => $product->id , 'customer_id' => $customer->id])->with('product','customer')->get();
+                    $query_result = $query_result->concat($result);
+                }
+            }
 
+            return view('index',['query_result' => $query_result]);
         }
         else if($request->has('customer_name') && $request->has('product_price')){
+            $query_result = collect();
+            foreach($customers as $customer){
+                foreach($products_p as $product){
+                    $result = Sale::where(['product_id' => $product->id , 'customer_id' => $customer->id])->with('product','customer')->get();
+                    $query_result = $query_result->concat($result);
+                }
+            }
+
+            return view('index',['query_result' => $query_result]);
 
         }
         else if($request->has('product_name') && $request->has('product_price')){
+            $query_result = collect();
+            foreach($products_n_p as $product){
+                $result = Sale::where(['product_id' => $product->id])->with('product','customer')->get();
+                $query_result = $query_result->concat($result);
+            }
 
+            return view('index',['query_result' => $query_result]);
         }
         else if($request->has('customer_name')){
+            $query_result = collect();
+            foreach($customers as $customer){
+                $result = Sale::where(['customer_id' => $customer->id])->with('product','customer')->get();
+                $query_result = $query_result->concat($result);
+            }
 
+            return view('index',['query_result' => $query_result]);
         }
         else if($request->has('product_name')){
+            $query_result = collect();
+            foreach($products_n as $product){
+                $result = Sale::where(['product_id' => $product->id])->with('product','customer')->get();
+                $query_result = $query_result->concat($result);
+            }
 
+            return view('index',['query_result' => $query_result]);
         }
         else if($request->has('product_price')){
+            $query_result = collect();
+            foreach($products_p as $product){
+                $result = Sale::where(['product_id' => $product->id])->with('product','customer')->get();
+                $query_result = $query_result->concat($result);
+            }
 
+            return view('index',['query_result' => $query_result]);
         }
         else{
             return redirect();
