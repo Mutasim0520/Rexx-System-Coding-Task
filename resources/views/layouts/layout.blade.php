@@ -19,6 +19,9 @@
     <div class="container">
         @yield('content')
     </div>
+        @if(Session::has('message'))
+            <p class="alert alert-info">{{ Session::get('message') }}</p>   
+        @endif
     
     @yield('scripts')
 </body>

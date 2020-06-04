@@ -10,7 +10,7 @@
             </div>
             <div class="form-group col-md-4">
                 <span>Enter Product Name</span>
-                <input class="form-control" type = 'text' name = 'product_name' placeholder=''>
+                <input class="form-control" type = 'text' name = 'product_name' placeholder='Name of product'>
             </div>
             <div class="form-group col-md-4">
                 <span>Enter Product Price</span>

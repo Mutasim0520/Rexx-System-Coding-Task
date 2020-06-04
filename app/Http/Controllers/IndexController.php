@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Customers as Customer;
 use App\Sales as Sale;
 use App\Products as Product;
+use Session as Session;
 
 class IndexController extends Controller
 {
@@ -15,17 +16,30 @@ class IndexController extends Controller
     }
 
     public function storeJsonData(Request $request){
-        if($request->hasFile('json_file')){
-            
-            $file = $request->file('json_file');
-            $fileName = time().$request->file('json_file')->getClientOriginalExtension();
-            $file-> move(public_path('/json'), $fileName);
+        $this->validate($request,array(
+            'json_file' =>'required|mimes:json',
+        ));
 
-            $path = public_path()."/json/${fileName}";
-            $json = json_decode(file_get_contents($path), true); 
-            $this->storeDataInDatabase($json);
+        if($request->hasFile('json_file')){
+            try{
+                $file = $request->file('json_file');
+                $fileName = time().$request->file('json_file')->getClientOriginalExtension();
+                $file-> move(public_path('/json'), $fileName);
+
+                $path = public_path()."/json/${fileName}";
+                $json = json_decode(file_get_contents($path), true); 
+                $this->storeDataInDatabase($json);
+            }catch(Exception $e){
+               Session::flash('message', 'Upload a json file');
+            return redirect()->back(); 
+            }
         }
-        else return redirect()->back();
+        else {
+            Session::flash('message', 'Upload a json file');
+            return redirect()->back();
+        }
+        Session::flash('message', 'Succesfully added the file');
+        return redirect('/');
     }
 
     public function storeDataInDatabase(array $json){
@@ -37,6 +51,7 @@ class IndexController extends Controller
                 $customer->name = $input['customer_name'];
                 $customer->email = $input['customer_mail'];
                 $customer->save();
+                $already_customer = Customer::where(['email' => $input['customer_mail']])->first();
             }
 
             if(!$already_product){
@@ -47,16 +62,12 @@ class IndexController extends Controller
                 $product->save();
             }
 
-            for($i = 0; $i<5; $i++){
-                $sale = new sale();
+            $sale = new sale();
             $sale->product_id = $input['product_id'];
             $sale->customer_id = $already_customer->id;
             $sale->date = $input['sale_date'];
             $sale->save();
-
-            }
         }
-        return view('index');
     }
 
     public function filter(Request $request){
