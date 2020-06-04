@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'IndexController@index')->name('index');
 Route::post('/store/json', 'IndexController@storeJsonData')->name('store.json');
-Route::get('/filter','IndexController@filter')->name('fiter');
+Route::get('/filter','IndexController@filter')->name('filter');

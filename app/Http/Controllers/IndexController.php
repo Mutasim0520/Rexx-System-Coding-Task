@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Customers as customer;
-use App\Sales as sale;
-use App\Products as product;
+use App\Customers as Customer;
+use App\Sales as Sale;
+use App\Products as Product;
 
 class IndexController extends Controller
 {
@@ -51,6 +51,55 @@ class IndexController extends Controller
             $sale->date = $input['sale_date'];
             $sale->save();
 
+        }
+    }
+
+    public function filter(Request $request){
+
+        if($request->has('customer_name')){
+            $customers = Customer::where(['name' => $request->customer_name])->get()->unique('email');
+        }
+        if($request->has('product_name') && $request->has('product_price')){
+            $products_n_p = Product::where(['name' => $request->product_name , 'price' => $request->product_price])->get()->unique('id');
+        }
+        else if($request->has('product_price')){
+            $products_p = Customer::where(['price' => $request->product_price])->get()->unique('id');
+        }
+        else{
+            $products_n = Customer::where(['name' => $request->product_name])->get()->unique('id');
+        }
+        
+        if($request->has('customer_name') && $request->has('product_name') && $request->has('product_price')){
+            $query_result = collect();
+            foreach($customers as $customer){
+                foreach($products_n_p as $product){
+                    $result = Sale::where(['product_id' => $product->id , 'customer_id' => $customer->id])->with('product','customer')->get();
+                    $query_result = $query_result->concat($result);
+                }
+            }
+
+            return view('index',['query_result' => $query_result]);
+        }
+        else if($request->has('customer_name') && $request->has('product_name')){
+
+        }
+        else if($request->has('customer_name') && $request->has('product_price')){
+
+        }
+        else if($request->has('product_name') && $request->has('product_price')){
+
+        }
+        else if($request->has('customer_name')){
+
+        }
+        else if($request->has('product_name')){
+
+        }
+        else if($request->has('product_price')){
+
+        }
+        else{
+            return redirect();
         }
     }
 }
