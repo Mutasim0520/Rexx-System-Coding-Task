@@ -7,7 +7,7 @@
         <form enctype="multipart/form-data" method="post" action="{{Route('store.json')}}">
         {{csrf_field()}}
         Upload JSON file <input type ='file' name='json_file'>
-        <input required = 'required' class="btn btn-primary" type='submit' value='Upload'>
+        <input class="btn btn-primary" type='submit' value='Upload' accept=".json" required >
         </form>
     </div>
     <div class='col-md-12'>

@@ -8,6 +8,14 @@
     @yield('styles')
 </head>
 <body>
+    <nav class="navbar navbar-expand-sm bg-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{Route('index')}}">Home</a>
+            </li>
+        </ul>
+
+    </nav>
     <div class="container">
         @yield('content')
     </div>

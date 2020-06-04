@@ -15,6 +15,8 @@ class IndexController extends Controller
     }
 
     public function storeJsonData(Request $request){
+        if($request->hasFile('json_file')){
+            
             $file = $request->file('json_file');
             $fileName = time().$request->file('json_file')->getClientOriginalExtension();
             $file-> move(public_path('/json'), $fileName);
@@ -22,6 +24,8 @@ class IndexController extends Controller
             $path = public_path()."/json/${fileName}";
             $json = json_decode(file_get_contents($path), true); 
             $this->storeDataInDatabase($json);
+        }
+        else return redirect()->back();
     }
 
     public function storeDataInDatabase(array $json){
@@ -66,7 +70,7 @@ class IndexController extends Controller
         else if($request->product_price){
             $products_p = Product::where(['price' => $request->product_price])->get()->unique('id');
         }
-        else{
+        else if($request->product_name){
             $products_n = Product::where(['name' => $request->product_name])->get()->unique('id');
         }
         
@@ -133,7 +137,7 @@ class IndexController extends Controller
             return view('search',['query_result' => $query_result]);
         }
         else{
-            return redirect();
+            return redirect()->back();
         }
     }
 }
